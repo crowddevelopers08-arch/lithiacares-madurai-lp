@@ -139,9 +139,16 @@ export default function PrivacyPolicyPage() {
               <p>If you have any questions, concerns, or requests regarding this Privacy Policy, please reach out to us:</p>
               <div className="mt-4 space-y-2 rounded-[0.5rem] bg-[#492e3b0d] p-5 text-[14px]">
                 <p className="font-semibold text-[#1a1c1b]">Le Thia Cares Medical Aesthetics</p>
-                <p className="text-[#4e4448]">Anna Nagar, Chennai, Tamil Nadu</p>
+                <p className="text-[#4e4448]">
+                  <span className="font-medium text-[#492e3b]">Kalavasal:</span> No.23, 1st Floor, SBI Staff II Colony, Kanadasan Street, SS Colony, Madurai, TN 625016
+                </p>
+                <p className="text-[#4e4448]">
+                  <span className="font-medium text-[#492e3b]">Anna Nagar:</span> First Floor, New HIG B-141, 80 Feet Rd, Anna Nagar, Madurai, TN 625020
+                </p>
                 <p>
-                  <a href="tel:+919342471839" className="text-[#492e3b] hover:underline">+91 93424 71839</a>
+                  <a href="tel:+918088009898" className="text-[#492e3b] hover:underline">+91 80880 09898</a>
+                  {' · '}
+                  <a href="tel:+919360431976" className="text-[#492e3b] hover:underline">+91 93604 31976</a>
                 </p>
                 <p>
                   <a href="mailto:lethiacares@gmail.com" className="text-[#492e3b] hover:underline">lethiacares@gmail.com</a>

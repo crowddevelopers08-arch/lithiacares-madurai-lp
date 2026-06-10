@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { AnimateOnScroll } from '@/components/AnimateOnScroll';
 import { WaveText } from '@/components/WaveText';
+import { BranchCallPicker } from '@/components/BranchCallPicker';
 import { useState, useEffect, useRef } from 'react';
 
 const offerImages = [
@@ -173,63 +174,165 @@ function CountdownTimer() {
 function OfferCardsGrid() {
   const [activeCard, setActiveCard] = useState(0);
   const [shimmerKey, setShimmerKey] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const total = offerImages.length;
+
+  function startAutoPlay() {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setActiveCard(p => (p + 1) % total);
+      setShimmerKey(k => k + 1);
+    }, 2500);
+  }
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setActiveCard(prev => (prev + 1) % offerImages.length);
-      setShimmerKey(k => k + 1);
-    }, 1500);
-    return () => clearInterval(id);
+    startAutoPlay();
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function navigate(dir: 1 | -1) {
+    setActiveCard(p => (p + dir + total) % total);
+    setShimmerKey(k => k + 1);
+    startAutoPlay(); // reset timer on manual nav
+  }
+
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.targetTouches[0].clientX;
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 48) navigate(diff > 0 ? 1 : -1);
+    touchStartX.current = null;
+  }
+
   return (
-    <div className="mx-auto mb-8 grid max-w-[860px] grid-cols-1 gap-6 sm:grid-cols-2 md:mb-10 md:gap-8 lg:mb-14 lg:gap-10 place-items-center">
-      {offerImages.map((img, index) => {
-        const isActive = index === activeCard;
-        return (
+    <div className="mx-auto mb-8 max-w-[860px] md:mb-10 lg:mb-14">
+
+      {/* ── Mobile Carousel (< sm) ── */}
+      <div className="sm:hidden relative px-1">
+        <div
+          className="relative overflow-hidden rounded-xl"
+          style={{ boxShadow: '0 0 0 2px #ff6b00, 0 0 24px 6px rgba(255,107,0,0.4)' }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* Slide strip */}
           <div
-            key={index}
-            style={{
-              position: 'relative',
-              borderRadius: '0.75rem',
-              overflow: 'hidden',
-              transform: isActive ? 'scale(1.06)' : 'scale(1)',
-              filter: isActive ? 'brightness(1.15)' : 'brightness(1)',
-              transition: 'transform 0.5s cubic-bezier(0.34,1.28,0.64,1), filter 0.5s ease, box-shadow 0.5s ease',
-              zIndex: isActive ? 2 : 1,
-              boxShadow: isActive
-                ? '0 0 0 2.5px #ff6b00, 0 0 20px 6px rgba(255,107,0,0.55), 0 0 40px 10px rgba(255,69,0,0.3)'
-                : '0 0 0 2.5px transparent',
-            }}
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${activeCard * 100}%)` }}
           >
-            {isActive && (
-              <div
-                key={shimmerKey}
-                className="cinema-shimmer-fire"
-                style={{
-                  position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none',
-                  background: 'linear-gradient(105deg, transparent 30%, rgba(255,160,60,0.35) 50%, transparent 70%)',
-                }}
-              />
-            )}
-            <div style={{
-              position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', gap: 5, zIndex: 20, pointerEvents: 'none',
-            }}>
-              {offerImages.map((_, di) => (
-                <span key={di} style={{
-                  display: 'block', width: 6, height: 6, borderRadius: '50%',
-                  background: di === activeCard ? '#ff6b00' : 'rgba(255,255,255,0.4)',
-                  boxShadow: di === activeCard ? '0 0 6px 2px #ff6b00' : 'none',
-                  animation: di === activeCard ? 'dot-fire 1s ease-in-out infinite' : 'none',
-                  transition: 'background 0.4s ease',
-                }} />
-              ))}
-            </div>
-            <Image src={img.src} alt={img.alt} width={600} height={600} className="h-auto w-full object-cover" />
+            {offerImages.map((img, i) => (
+              <div key={i} className="relative w-full flex-shrink-0">
+                {i === activeCard && (
+                  <div
+                    key={shimmerKey}
+                    className="cinema-shimmer-fire"
+                    style={{
+                      position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none',
+                      background: 'linear-gradient(105deg, transparent 30%, rgba(255,160,60,0.35) 50%, transparent 70%)',
+                    }}
+                  />
+                )}
+                <Image src={img.src} alt={img.alt} width={600} height={600} className="h-auto w-full object-cover" />
+              </div>
+            ))}
           </div>
-        );
-      })}
+
+          {/* Prev chevron */}
+          <button
+            onClick={() => navigate(-1)}
+            aria-label="Previous offer"
+            className="absolute left-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full"
+            style={{ background: 'rgba(179,16,0,0.8)', border: '1px solid rgba(255,107,0,0.55)', backdropFilter: 'blur(4px)' }}
+          >
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 20 }}>chevron_left</span>
+          </button>
+
+          {/* Next chevron */}
+          <button
+            onClick={() => navigate(1)}
+            aria-label="Next offer"
+            className="absolute right-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full"
+            style={{ background: 'rgba(179,16,0,0.8)', border: '1px solid rgba(255,107,0,0.55)', backdropFilter: 'blur(4px)' }}
+          >
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 20 }}>chevron_right</span>
+          </button>
+        </div>
+
+        {/* Dot indicators */}
+        <div className="mt-4 flex justify-center gap-3">
+          {offerImages.map((_, di) => (
+            <button
+              key={di}
+              onClick={() => { setActiveCard(di); setShimmerKey(k => k + 1); startAutoPlay(); }}
+              aria-label={`Go to offer ${di + 1}`}
+              style={{
+                width: 10, height: 10, borderRadius: '50%', padding: 0, border: 'none',
+                cursor: 'pointer',
+                background: di === activeCard ? '#ff6b00' : 'rgba(255,255,255,0.35)',
+                boxShadow: di === activeCard ? '0 0 8px 3px #ff6b00' : 'none',
+                transition: 'background 0.4s, box-shadow 0.4s',
+                animation: di === activeCard ? 'dot-fire 1s ease-in-out infinite' : 'none',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Desktop Grid (sm+) — unchanged ── */}
+      <div className="hidden sm:grid grid-cols-2 gap-6 place-items-center md:gap-8 lg:gap-10">
+        {offerImages.map((img, index) => {
+          const isActive = index === activeCard;
+          return (
+            <div
+              key={index}
+              style={{
+                position: 'relative',
+                borderRadius: '0.75rem',
+                overflow: 'hidden',
+                transform: isActive ? 'scale(1.06)' : 'scale(1)',
+                filter: isActive ? 'brightness(1.15)' : 'brightness(1)',
+                transition: 'transform 0.5s cubic-bezier(0.34,1.28,0.64,1), filter 0.5s ease, box-shadow 0.5s ease',
+                zIndex: isActive ? 2 : 1,
+                boxShadow: isActive
+                  ? '0 0 0 2.5px #ff6b00, 0 0 20px 6px rgba(255,107,0,0.55), 0 0 40px 10px rgba(255,69,0,0.3)'
+                  : '0 0 0 2.5px transparent',
+              }}
+            >
+              {isActive && (
+                <div
+                  key={shimmerKey}
+                  className="cinema-shimmer-fire"
+                  style={{
+                    position: 'absolute', inset: 0, zIndex: 10, pointerEvents: 'none',
+                    background: 'linear-gradient(105deg, transparent 30%, rgba(255,160,60,0.35) 50%, transparent 70%)',
+                  }}
+                />
+              )}
+              <div style={{
+                position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)',
+                display: 'flex', gap: 5, zIndex: 20, pointerEvents: 'none',
+              }}>
+                {offerImages.map((_, di) => (
+                  <span key={di} style={{
+                    display: 'block', width: 6, height: 6, borderRadius: '50%',
+                    background: di === activeCard ? '#ff6b00' : 'rgba(255,255,255,0.4)',
+                    boxShadow: di === activeCard ? '0 0 6px 2px #ff6b00' : 'none',
+                    animation: di === activeCard ? 'dot-fire 1s ease-in-out infinite' : 'none',
+                    transition: 'background 0.4s ease',
+                  }} />
+                ))}
+              </div>
+              <Image src={img.src} alt={img.alt} width={600} height={600} className="h-auto w-full object-cover" />
+            </div>
+          );
+        })}
+      </div>
+
     </div>
   );
 }
@@ -297,11 +400,13 @@ export function OffersSection() {
           style={{ background: 'linear-gradient(135deg, #b31000, #ff4500)', boxShadow: '0 4px 20px rgba(255,69,0,0.5)' }}>
           <WaveText>BOOK YOUR APPOINTMENT</WaveText>
         </a>
-        <a href="tel:+919342471839" className="btn-outline flex w-full items-center justify-center gap-2 rounded-[0.5rem] border-2 px-10 py-4 text-[12px] font-semibold tracking-[0.08em] sm:w-auto"
-          style={{ borderColor: '#ff6b00', color: '#ff9955' }}>
+        <BranchCallPicker
+          className="btn-outline flex w-full items-center justify-center gap-2 rounded-[0.5rem] border-2 px-10 py-4 text-[12px] font-semibold tracking-[0.08em] sm:w-auto"
+          style={{ borderColor: '#ff6b00', color: '#ff9955' }}
+        >
           <span className="material-symbols-outlined text-sm">call</span>
           <WaveText>CALL NOW</WaveText>
-        </a>
+        </BranchCallPicker>
       </AnimateOnScroll>
 
     </section>

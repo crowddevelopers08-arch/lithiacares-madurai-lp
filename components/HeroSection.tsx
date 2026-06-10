@@ -1,6 +1,7 @@
 ﻿'use client';
 import { useState, useRef } from 'react';
 import { WaveText } from '@/components/WaveText';
+import { BranchCallPicker } from '@/components/BranchCallPicker';
 
 const HERO_VIDEO_URL =
   'https://res.cloudinary.com/djzexkvyv/video/upload/v1779340496/Chennai_cilent_2_ny4y6g.mp4';
@@ -88,7 +89,7 @@ export function HeroSection() {
             Book your appointments at
           </span>
           <h1 className="hero-anim-title font-display text-[28px] font-medium leading-[1.2] text-[#1a1c1b] sm:text-[36px] md:text-[52px] md:font-semibold md:leading-[1.1] md:tracking-[-0.02em] lg:text-[64px]">
-            Best Skin Clinic in Anna Nagar
+            Best Skin Clinic in Madurai
           </h1>
           <p className="hero-anim-desc mx-auto max-w-lg text-[16px] font-normal leading-[1.6] text-[#4e4448] md:mx-0 md:text-[18px]">
             we provide quality skin treatments at affordable prices without compromising on care and safety.
@@ -136,13 +137,12 @@ export function HeroSection() {
             >
               <WaveText>BOOK YOUR APPOINTMENT</WaveText>
             </a>
-            <a
-              href="tel:+919342471839"
+            <BranchCallPicker
               className="btn-outline flex items-center gap-2 rounded-[0.5rem] border border-[#492e3b4d] px-6 py-3 text-[12px] font-semibold tracking-[0.08em] text-[#492e3b] hover:bg-[#492e3b0d]"
             >
               <span className="material-symbols-outlined text-sm">call</span>
               <WaveText>CALL NOW</WaveText>
-            </a>
+            </BranchCallPicker>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { AnimateOnScroll } from '@/components/AnimateOnScroll';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -62,7 +62,7 @@ export function BeforeAfterSection() {
           You can be next
         </span>
         <h2 className="mt-3 font-display text-[26px] font-medium leading-[1.2] text-[#1a1c1b] sm:text-[32px] md:text-[48px] md:font-semibold md:leading-[1.1] md:tracking-[-0.02em] lg:text-[64px]">
-          Get Best Skin Treatments in Chennai
+          Get Best Skin Treatments in Madurai
         </h2>
       </AnimateOnScroll>
 

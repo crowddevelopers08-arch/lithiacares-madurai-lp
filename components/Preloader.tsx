@@ -88,7 +88,7 @@ export function Preloader() {
             className="preloader-tagline-anim font-body text-[10px] font-semibold uppercase text-white/50 sm:text-[11px]"
             style={{ letterSpacing: '0.4em', animationDelay: '1.05s' }}
           >
-            Luxury Skin Care · Anna Nagar
+            Luxury Skin Care · Madurai
           </p>
         </div>
 
