@@ -4,7 +4,7 @@ import { WaveText } from '@/components/WaveText';
 import { BranchCallPicker } from '@/components/BranchCallPicker';
 
 const HERO_VIDEO_URL =
-  'https://res.cloudinary.com/djzexkvyv/video/upload/v1779340496/Chennai_cilent_2_ny4y6g.mp4';
+  'https://res.cloudinary.com/dthj7fakc/video/upload/v1781261148/lathia-vi-5_un9gdh.mp4';
 
 export function HeroSection() {
   const [muted, setMuted] = useState(true);

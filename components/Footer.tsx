@@ -1,6 +1,7 @@
 import { AnimateOnScroll } from '@/components/AnimateOnScroll';
 
 const otherBranches = [
+  'Chennai (Anna Nagar)',
   'Salem',
   'Erode',
   'Tirupur',
